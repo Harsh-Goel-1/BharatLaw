@@ -48,21 +48,21 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
 # Example query
-query = "can i get bail under section 307 IPC?"
+query = "My landlord is forcing us to leave immediately without any warning, is this legal?"
 
-# Tokenize and predict
+# Tokenize and get model output
 inputs = tokenizer(query, return_tensors="pt", truncation=True)
 with torch.no_grad():
-    logits = model(**inputs).logits
-    predictions = (logits.sigmoid() > 0.5).int().tolist()[0]
+    outputs = model(**inputs)
+    logits = outputs.logits
+    probs = F.softmax(logits, dim=1)
 
-# Labels (replace with your actual label list)
-labels = ["IPC 307", "Bail Provision", "CrPC 437", "Juvenile Act", "NDPS Act"]
+# Get predicted class and probability
+predicted_class = torch.argmax(probs, dim=1).item()
+confidence = probs[0][predicted_class].item()
 
-# Print matched sections
-for label, pred in zip(labels, predictions):
-    if pred:
-        print(f"✅ {label}")
+print(f"Predicted class: {predicted_class}, Confidence: {confidence:.2f}")
+
 ```
 
 ---
