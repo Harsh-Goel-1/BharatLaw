@@ -1,40 +1,101 @@
-⚖️🇮🇳 BharatLaw: Fine-Tuned Legal Query Assistant for Indian Law
-🧠 Project Overview
-BharatLaw is an AI-powered legal assistant designed to interpret informal legal queries and map them to the correct Indian laws, acts, and sections.
+# BharatLaw – Qwen2-0.5B Fine-Tuned for Indian Legal Query Classification
 
-It's built by fine-tuning the Qwen2-0.5B model — a lightweight, open-source language model — on a custom legal dataset.
+[![Model on HuggingFace](https://img.shields.io/badge/HuggingFace-Model-yellow?logo=huggingface)](https://huggingface.co/harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-🔧 Technical Summary
-🧩 Base Model: Qwen2-0.5B, a compact LLM from Alibaba, optimized for efficiency.
+## Overview
 
-📂 Dataset: Custom-created dataset of ~1,000+ synthetic samples pairing informal legal queries with structured outputs (acts + sections + explanations).
+**BharatLaw** is a lightweight and domain-specific legal AI model fine-tuned on **Qwen2-0.5B** to classify **informal Indian legal queries** into applicable **laws, acts, and sections**. It is built with efficiency, affordability, and speed in mind — ideal for resource-constrained deployments or real-time assistance.
 
-🏷️ Task: Multi-label classification + generation.
+👉 **[Click here to try the model on Hugging Face 🤗](https://huggingface.co/harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2)**
 
-Classifies which legal acts/sections apply.
+---
 
-Generates concise, section-specific explanations.
+## 🔍 What It Does
 
-⚙️ Fine-tuning Objective: Supervised fine-tuning (SFT) for domain adaptation.
+* ✅ Classifies legal queries into **multiple applicable laws/sections**.
+* ✅ Supports **multi-label outputs** for complex or compound legal scenarios.
+* ✅ Understands informal, colloquial query phrasing (e.g., "can i get bail under 376?").
 
-📦 Deployment Ready: Lightweight enough for deployment on consumer-grade hardware or Colab notebooks.
+---
 
-🧠 Capabilities
-🤖 Understands informal, colloquial legal queries (e.g., "Can I get fired without notice?", "Flat owner not giving deposit back")
+## ⚙️ Model Details
 
-🗃️ Maps them to structured legal references (e.g., Industrial Disputes Act, Indian Contract Act)
+| Property         | Value                                                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Base Model       | [Qwen2-0.5B](https://huggingface.co/Qwen/Qwen2-0.5B)                                                                          |
+| Fine-tuned Model | [`harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2`](https://huggingface.co/harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2) |
+| Task             | Multi-label legal classification                                                                                              |
+| Dataset          | \~1,000 synthetic legal query-answer pairs                                                                                    |
+| Language         | English (Indian legal context)                                                                                                |
+| Optimized For    | Speed, efficiency, affordability                                                                                              |
 
-🧾 Provides explanatory answers with direct reference to the applicable act/section
+---
 
-📌 Applications
-🧑‍🎓 Legal awareness tools for students
+## 🚀 Quick Start
 
-📱 Chatbot integrations for law-related FAQs
+```bash
+pip install transformers
+```
 
-🏛️ Civic tech platforms to simplify public access to legal information
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
 
-🧑‍💼 Assistive tool for legal professionals doing quick triage
+# Load model and tokenizer
+model_name = "harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSequenceClassification.from_pretrained(model_name)
 
-🔗 Hugging Face Model Repo
-📍 harsh580g/qwen2-0.5B-fine-tuned-on-legal-data-v2
+# Example query
+query = "can i get bail under section 307 IPC?"
 
+# Tokenize and predict
+inputs = tokenizer(query, return_tensors="pt", truncation=True)
+with torch.no_grad():
+    logits = model(**inputs).logits
+    predictions = (logits.sigmoid() > 0.5).int().tolist()[0]
+
+# Labels (replace with your actual label list)
+labels = ["IPC 307", "Bail Provision", "CrPC 437", "Juvenile Act", "NDPS Act"]
+
+# Print matched sections
+for label, pred in zip(labels, predictions):
+    if pred:
+        print(f"✅ {label}")
+```
+
+---
+
+## 🧠 Dataset
+
+* Manually crafted and programmatically augmented \~1,000 query-answer samples.
+* Covers:
+
+  * Bail conditions
+  * Criminal offenses
+  * Juvenile justice
+  * NDPS-related queries
+  * Basic constitutional rights
+
+---
+
+## 📌 Applications
+
+* Legal help chatbots
+* Pre-filtering in legal research tools
+* Cost-effective assistants for paralegals and students
+* Edge-device deployment in rural legal outreach programs
+
+---
+
+## 📄 License
+
+This project is released under the [MIT License](LICENSE).
+
+---
+
+## 👤 Author
+
+Developed by [@harsh580g](https://huggingface.co/harsh580g)
+Part of the ongoing **BharatLaw AI Initiative** for accessible legal technology in India.
